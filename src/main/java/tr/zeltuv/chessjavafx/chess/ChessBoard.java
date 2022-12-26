@@ -9,6 +9,7 @@ import tr.zeltuv.chessjavafx.node.GameNode;
 import tr.zeltuv.chessjavafx.utils.Util;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,7 @@ public class ChessBoard implements GameNode {
     public static Color BLUE_SELECTED_TILE = Color.rgb(0, 255, 255, 0.5);
     public static Color ATTACK_TILE = Color.rgb(255, 30, 5, 0.5);
 
-    public static Map<Character,Class<? extends Piece>> PIECES_CHAR = new HashMap<>() {{
+    public static Map<Character, Class<? extends Piece>> PIECES_CHAR = new HashMap<>() {{
         put('p', Pawn.class);
     }};
 
@@ -33,15 +34,34 @@ public class ChessBoard implements GameNode {
 
     public ChessBoard(List<String> boardTiles) {
         placePieces(boardTiles);
+
+        calculate();
     }
 
-    public void placePieces(List<String> boardTiles){
+    public void calculate() {
+        getAllPieces().forEach(Piece::recalculate);
+    }
+
+    public List<Piece> getAllPieces() {
+        List<Piece> pieces = new ArrayList<>();
+
+        for (Piece[] pieces1 : grid) {
+            for (Piece piece : pieces1) {
+                if (piece != null)
+                    pieces.add(piece);
+            }
+        }
+
+        return pieces;
+    }
+
+    public void placePieces(List<String> boardTiles) {
         for (int i = 0; i < boardTiles.size(); i++) {
             String row = boardTiles.get(i);
 
             Piece[] pieces = new Piece[8];
 
-            if(row.contains("_")){
+            if (row.contains("_")) {
                 grid[i] = pieces;
                 continue;
             }
@@ -54,12 +74,12 @@ public class ChessBoard implements GameNode {
                 Team team = Team.BLACK;
                 Class<? extends Piece> pieceClass = PIECES_CHAR.get(c);
 
-                if(Character.toUpperCase(c) == c){
-                    team= Team.WHITE;
-                    pieceClass =PIECES_CHAR.get(Character.toLowerCase(c));
+                if (Character.toUpperCase(c) == c) {
+                    team = Team.WHITE;
+                    pieceClass = PIECES_CHAR.get(Character.toLowerCase(c));
                 }
 
-                Piece piece = createPiece(pieceClass,x,i,team);
+                Piece piece = createPiece(pieceClass, x, i, team);
                 pieces[x] = piece;
             }
 
@@ -68,16 +88,14 @@ public class ChessBoard implements GameNode {
 
     }
 
-    public Piece createPiece(Class<? extends Piece> clazz,int x,int y,Team team){
+    public Piece createPiece(Class<? extends Piece> clazz, int x, int y, Team team) {
         try {
-            Constructor<? extends Piece> constructor =  clazz.getConstructor(
+            Constructor<? extends Piece> constructor = clazz.getConstructor(
                     ChessBoard.class,
                     int.class,
                     int.class,
                     Team.class
             );
-
-            //TODO complete constructor
 
             Piece piece = constructor.newInstance(
                     this,
@@ -94,8 +112,7 @@ public class ChessBoard implements GameNode {
     }
 
 
-
-    public Piece getPieceOnMouse(){
+    public Piece getPieceOnMouse() {
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[i].length; j++) {
                 if (Util.contains(
@@ -150,15 +167,24 @@ public class ChessBoard implements GameNode {
         }
     }
 
+
     public Piece getSelected() {
         return selected;
     }
 
     public void removeSelected() {
-        selected= null;
+        selected = null;
     }
 
     public void setSelected(Piece selected) {
         this.selected = selected;
+    }
+
+    public Piece lookupForPiece(int x, int y) {
+        return grid[y][x];
+    }
+
+    public Piece[][] getGrid() {
+        return grid;
     }
 }

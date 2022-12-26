@@ -3,11 +3,11 @@ package tr.zeltuv.chessjavafx.chess.team;
 public enum Team {
     WHITE, BLACK;
 
-    public int adjustDirection(int i) {
+    public int adjustDirection(int a,int i) {
         if (this!=ON_TOP){
-            return i*-1;
+            return a-i;
         }
-        return i;
+        return i+i;
     }
 
     public static Team ON_TOP = BLACK;

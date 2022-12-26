@@ -2,10 +2,10 @@ package tr.zeltuv.chessjavafx.chess;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import tr.zeltuv.chessjavafx.Game;
 import tr.zeltuv.chessjavafx.chess.team.Team;
 import tr.zeltuv.chessjavafx.node.GameNode;
-import tr.zeltuv.chessjavafx.scene.impl.ChessScene;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,19 +80,37 @@ public abstract class Piece implements GameNode {
         this.y = y;
     }
 
-    public abstract List<Piece> getPreys();
+    public int[][] getPaths() {
+        return paths;
+    }
 
-    public abstract int[][] getDirections();
+    public List<Piece> getPreys() {
+        return preys;
+    }
+
+    public abstract List<Piece> calculatePreys();
+
+    public abstract int[][] calculatePaths();
 
     public void move(int x, int y) {
         setX(x);
         setY(y);
     }
 
-
     public void recalculate(){
-        paths = getDirections();
-        preys = getPreys();
+        paths= new int[0][];
+
+        //TODO calculation authorize negative and number past 8
+
+        for (int[] ints : calculatePaths()) {
+            int x = ints[0];
+            int y = ints[1];
+
+            if(x >=8 || x<0){
+
+            }
+        }
+        preys = calculatePreys();
     }
 
     @Override
@@ -107,11 +125,26 @@ public abstract class Piece implements GameNode {
             context.drawImage(blackImage, x * WIDTH, y * HEIGHT, WIDTH, HEIGHT);
         }
 
-        if (chessBoard.getSelected() == this) {
-            context.setFill(BLUE_SELECTED_TILE);
-            context.fillRect(getX() * WIDTH
-                    , getY() * HEIGHT,
-                    WIDTH, HEIGHT);
+        if (chessBoard.getSelected() == this)
+            drawSelectedHighlight(context);
+    }
+
+    public void drawSelectedHighlight(GraphicsContext context){
+        drawHighlight(context,BLUE_SELECTED_TILE,getX(),getY());
+
+        for (int[] direction : getPaths()) {
+            int x = direction[0];
+            int y = direction[1];
+
+            drawHighlight(context,BLUE_SELECTED_TILE,x,y);
+
         }
+    }
+
+    private void drawHighlight(GraphicsContext context,Color color,int x,int y){
+        context.setFill(color);
+        context.fillRect(x * WIDTH
+                , y * HEIGHT,
+                WIDTH, HEIGHT);
     }
 }

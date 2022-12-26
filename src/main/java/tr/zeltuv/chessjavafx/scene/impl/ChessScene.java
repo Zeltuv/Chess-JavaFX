@@ -21,8 +21,6 @@ public class ChessScene extends GameScene {
     public ChessScene() {
         super("inGame");
 
-        System.out.println(getBoardTiles());
-
         chessBoard = new ChessBoard(getBoardTiles());
 
     }
