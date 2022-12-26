@@ -4,12 +4,13 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import tr.zeltuv.chessjavafx.Game;
 import tr.zeltuv.chessjavafx.chess.team.Team;
-import tr.zeltuv.chessjavafx.chess.team.TeamColor;
 import tr.zeltuv.chessjavafx.node.GameNode;
 import tr.zeltuv.chessjavafx.scene.impl.ChessScene;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static tr.zeltuv.chessjavafx.chess.ChessBoard.BLUE_SELECTED_TILE;
 
 public abstract class Piece implements GameNode {
 
@@ -24,8 +25,6 @@ public abstract class Piece implements GameNode {
     private Image whiteImage;
     private Team team;
     private boolean canFly;
-    private boolean isSelected;
-
     private int[][] paths;
 
     private List<Piece> preys = new ArrayList<>();
@@ -90,13 +89,6 @@ public abstract class Piece implements GameNode {
         setY(y);
     }
 
-    public void setSelected(boolean selected) {
-        isSelected = selected;
-    }
-
-    public boolean isSelected() {
-        return isSelected;
-    }
 
     public void recalculate(){
         paths = getDirections();
@@ -109,14 +101,14 @@ public abstract class Piece implements GameNode {
 
     @Override
     public void render(GraphicsContext context) {
-        if(team.getTeamColor() == TeamColor.WHITE) {
+        if(team == Team.WHITE) {
             context.drawImage(whiteImage, x * WIDTH, y * HEIGHT, WIDTH, HEIGHT);
         }else{
             context.drawImage(blackImage, x * WIDTH, y * HEIGHT, WIDTH, HEIGHT);
         }
 
-        if (isSelected) {
-            context.setFill(ChessScene.BLUE_SELECTED_TILE);
+        if (chessBoard.getSelected() == this) {
+            context.setFill(BLUE_SELECTED_TILE);
             context.fillRect(getX() * WIDTH
                     , getY() * HEIGHT,
                     WIDTH, HEIGHT);

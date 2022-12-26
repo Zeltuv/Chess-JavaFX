@@ -4,24 +4,20 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import tr.zeltuv.chessjavafx.scene.GameScene;
 import tr.zeltuv.chessjavafx.scene.impl.MainMenu;
 import tr.zeltuv.chessjavafx.utils.ResourceDir;
-import tr.zeltuv.chessjavafx.utils.ResourceDirSaver;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Game extends Application {
 
@@ -35,8 +31,7 @@ public class Game extends Application {
     public static ResourceDir CONFIG_DIR = new ResourceDir("config");
 
     @Override
-    public void start(Stage stage) throws IOException {
-        saveResources();
+    public void start(Stage stage) {
 
         Canvas canvas = new Canvas(WIDTH, HEIGHT);
 
@@ -76,13 +71,7 @@ public class Game extends Application {
         scene.setOnKeyReleased(event -> PRESSED_KEY.remove(event.getCode()));
     }
 
-    public void saveResources(){
-        ResourceDirSaver resourceDirSaver = new ResourceDirSaver("image",Game.class.getClassLoader());
-        ResourceDirSaver configDirSaver = new ResourceDirSaver("config",Game.class.getClassLoader());
 
-        configDirSaver.saveIfNotExist();
-        resourceDirSaver.saveIfNotExist();
-    }
 
     public static void main(String[] args) {
         launch();

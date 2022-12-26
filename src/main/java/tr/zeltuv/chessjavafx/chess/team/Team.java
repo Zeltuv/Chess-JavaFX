@@ -1,31 +1,14 @@
 package tr.zeltuv.chessjavafx.chess.team;
 
-import tr.zeltuv.chessjavafx.chess.Piece;
+public enum Team {
+    WHITE, BLACK;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class Team {
-
-    //TODO convert to enum
-
-    private TeamColor teamColor;
-    private int direction;
-
-    public Team(TeamColor teamColor, boolean isTop) {
-        this.teamColor = teamColor;
-        this.direction = isTop?-1:1;
+    public int adjustDirection(int i) {
+        if (this!=ON_TOP){
+            return i*-1;
+        }
+        return i;
     }
 
-    public TeamColor getTeamColor() {
-        return teamColor;
-    }
-
-    public int getDirection() {
-        return direction;
-    }
-
-    public int calculateDirection(int i) {
-        return i*direction;
-    }
+    public static Team ON_TOP = BLACK;
 }

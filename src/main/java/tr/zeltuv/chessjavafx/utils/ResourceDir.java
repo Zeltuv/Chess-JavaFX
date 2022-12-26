@@ -1,6 +1,7 @@
 package tr.zeltuv.chessjavafx.utils;
 
 import javafx.scene.image.Image;
+import tr.zeltuv.chessjavafx.Game;
 
 import java.io.*;
 
@@ -12,15 +13,28 @@ public class ResourceDir {
         this.dir = dir;
     }
 
-    public File getResource(String name){
-        return new File(dir,name);
-    }
-    public Image getImage(String name){
-        File file = new File(dir,name);
+    public File getResource(String name) {
+        File file = new File(name);
 
+        try (
+                InputStream inputStream = Game.class.getClassLoader().getResourceAsStream(dir
+                        + "/" + name);
+                OutputStream outputStream = new FileOutputStream(file);
+
+        ) {
+            inputStream.transferTo(outputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        return file;
+    }
+
+    public Image getImage(String name) {
         Image image;
 
-        try (InputStream inputStream = new FileInputStream(file)){
+        try (InputStream inputStream = Game.class.getClassLoader().getResourceAsStream(dir+"/"+name)) {
 
             image = new Image(inputStream);
 
