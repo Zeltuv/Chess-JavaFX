@@ -7,8 +7,9 @@ import java.util.List;
 
 public class Team {
 
+    //TODO convert to enum
+
     private TeamColor teamColor;
-    private List<Piece> pieces = new ArrayList<>();
     private int direction;
 
     public Team(TeamColor teamColor, boolean isTop) {
@@ -18,14 +19,6 @@ public class Team {
 
     public TeamColor getTeamColor() {
         return teamColor;
-    }
-
-    public List<Piece> getPieces() {
-        return pieces;
-    }
-
-    public void setPieces(List<Piece> pieces) {
-        this.pieces = pieces;
     }
 
     public int getDirection() {

@@ -4,20 +4,21 @@ import tr.zeltuv.chessjavafx.chess.ChessBoard;
 import tr.zeltuv.chessjavafx.chess.Piece;
 import tr.zeltuv.chessjavafx.chess.team.Team;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Pawn extends Piece {
-    private static final String ID = "p";
-    private static final String IMAGE_URL = "p";
+    private static final char ID = 'p';
+    private static final String IMAGE_URL_BLACK = "b_pawn_png_shadow_128px.png";
+    private static final String IMAGE_URL_WHITE = "w_pawn_png_shadow_128px.png";
 
-
-    public Pawn(ChessBoard chessBoard, String id, int x, int y, String imageName, Team team, boolean canFly) {
-        super(chessBoard, id, x, y, imageName, team, canFly);
+    public Pawn(ChessBoard chessBoard, int x, int y, Team team) {
+        super(chessBoard, ID, x, y, IMAGE_URL_BLACK,IMAGE_URL_WHITE, team, false);
     }
 
     @Override
     public List<Piece> getPreys() {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
