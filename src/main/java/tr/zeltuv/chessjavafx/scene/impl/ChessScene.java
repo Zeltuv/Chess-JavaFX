@@ -35,7 +35,7 @@ public class ChessScene extends GameScene {
 
     }
 
-    public List<String> getBoardTiles(){
+    public List<String> getBoardTiles() {
         File file = Game.CONFIG_DIR.getResource("board.txt");
 
         return Util.fromFileToLine(file);
@@ -49,21 +49,36 @@ public class ChessScene extends GameScene {
 
     @Override
     public void click(MouseButton mouseButton) {
-        switch(mouseButton){
+        switch (mouseButton) {
             case PRIMARY -> {
                 clickPrimary();
             }
         }
     }
 
-    private void clickPrimary(){
+    private void clickPrimary() {
         Piece piece = chessBoard.getPieceOnMouse();
 
-        if(piece==null) {
-            chessBoard.removeSelected();
+        if (chessBoard.getSelected() == null) {
+            if (piece == null) {
+                chessBoard.removeSelected();
+            }else {
+                if (piece.getTeam() == chessBoard.getPlayingTeam())
+                    chessBoard.setSelected(piece);
+            }
+            return;
         }
 
-        chessBoard.setSelected(piece);
+        int[] ints = chessBoard.getCoordinateOnMouse();
+
+        int x = ints[0];
+        int y = ints[1];
+
+        if (!chessBoard.getSelected().move(x, y)) {
+            chessBoard.removeSelected();
+        } else {
+            chessBoard.switchPlayingTeam();
+        }
     }
 
 

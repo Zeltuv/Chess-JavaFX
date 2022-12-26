@@ -26,7 +26,7 @@ public class ChessBoard implements GameNode {
         put('p', Pawn.class);
     }};
 
-    private Team playingTeam;
+    private Team playingTeam = Team.WHITE;
 
     private Piece[][] grid = new Piece[8][8];
 
@@ -130,6 +130,26 @@ public class ChessBoard implements GameNode {
         return null;
     }
 
+    public int[] getCoordinateOnMouse() {
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                if (Util.contains(
+                        Game.MOUSE_X,
+                        Game.MOUSE_Y,
+                        j * 100,
+                        i * 100,
+                        100,
+                        100
+                )) {
+                    return new int[]{
+                            j,i
+                    };
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     public void update() {
 
@@ -181,10 +201,24 @@ public class ChessBoard implements GameNode {
     }
 
     public Piece lookupForPiece(int x, int y) {
+        if(x <0 || x>8)
+            return null;
+
+        if(y <0 || y>8)
+            return null;
+
         return grid[y][x];
     }
 
     public Piece[][] getGrid() {
         return grid;
+    }
+
+    public void switchPlayingTeam() {
+        playingTeam = playingTeam==Team.WHITE?Team.BLACK:Team.WHITE;
+    }
+
+    public Team getPlayingTeam() {
+        return playingTeam;
     }
 }

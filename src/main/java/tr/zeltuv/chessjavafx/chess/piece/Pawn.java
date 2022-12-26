@@ -15,19 +15,24 @@ public class Pawn extends Piece {
     private boolean firstPlay = true;
 
     public Pawn(ChessBoard chessBoard, int x, int y, Team team) {
-        super(chessBoard, ID, x, y, IMAGE_URL_BLACK, IMAGE_URL_WHITE, team, false);
+        super(chessBoard, ID, x, y, IMAGE_URL_BLACK, IMAGE_URL_WHITE, team);
     }
 
     @Override
     public List<Piece> calculatePreys() {
         List<Piece> preys = new ArrayList<>();
 
-        if (firstPlay) {
+        int x1 =
+        int[] secondCoordinate = new int[]{
+
+        };
+
+      /*  if (firstPlay) {
             int y2 = getTeam().adjustDirection(getY(), 2);
 
             if(y2 <0){
                 Piece piece = getChessBoard().lookupForPiece(getX(), y2);
-                if(piece!= null)
+                if(piece!= null && piece.getTeam() != getTeam())
                     preys.add(piece);
             }
         }
@@ -36,10 +41,10 @@ public class Pawn extends Piece {
 
         if(y1 <0){
             Piece piece = getChessBoard().lookupForPiece(getX(), y1);
-            if(piece!= null)
+            if(piece!= null && piece.getTeam() != getTeam())
                 preys.add(piece);
         }
-
+*/
         return preys;
     }
 

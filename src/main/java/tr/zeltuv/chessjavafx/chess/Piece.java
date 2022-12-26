@@ -24,12 +24,11 @@ public abstract class Piece implements GameNode {
     private Image blackImage;
     private Image whiteImage;
     private Team team;
-    private boolean canFly;
     private int[][] paths;
 
     private List<Piece> preys = new ArrayList<>();
 
-    public Piece(ChessBoard chessBoard, char id, int x, int y, String blackImage,String whiteImage, Team team, boolean canFly) {
+    public Piece(ChessBoard chessBoard, char id, int x, int y, String blackImage,String whiteImage, Team team) {
         this.chessBoard = chessBoard;
         this.id = id;
         this.x = x;
@@ -37,11 +36,6 @@ public abstract class Piece implements GameNode {
         this.whiteImage = Game.IMAGE_DIR.getImage(whiteImage);
         this.blackImage = Game.IMAGE_DIR.getImage(blackImage);
         this.team = team;
-        this.canFly = canFly;
-    }
-
-    public boolean canFly() {
-        return canFly;
     }
 
     public ChessBoard getChessBoard() {
@@ -88,29 +82,113 @@ public abstract class Piece implements GameNode {
         return preys;
     }
 
+    public int[][] getPathToRender(){
+        List<int[]> pathList = new ArrayList<>();
+
+        for (int i = 0; i < getPaths().length; i++) {
+            int x = getPaths()[i][0];
+            int y = getPaths()[i][1];
+
+            boolean hasPrey = false;
+
+            for (Piece prey : getPreys()) {
+                if(
+                        (prey.getX() == x)
+                        &&(prey.getY() == y)
+                )
+                    hasPrey = true;
+            }
+
+            if(!hasPrey) {
+                pathList.add(new int[]{x,y});
+            }
+
+        }
+
+        int[][] path = new int[pathList.size()][];
+
+        for (int i = 0; i < pathList.size(); i++) {
+            path[i] = pathList.get(i);
+        }
+
+        return path;
+    }
+
     public abstract List<Piece> calculatePreys();
 
     public abstract int[][] calculatePaths();
 
-    public void move(int x, int y) {
+    public boolean move(int x, int y) {
+        boolean isInPath = false;
+        boolean isPray = false;
+
+        for (int[] path : getPaths()) {
+            int xPath = path[0];
+            int yPath = path[1];
+
+            if((x == xPath)&&(y == yPath)){
+                isInPath = true;
+                for (Piece prey : getPreys()) {
+                    if(
+                            (prey.getX() == x)&&
+                            (prey.getY() == y)
+                    ){
+                        isPray = true;
+                    }
+                }
+            }
+        }
+
+        if(!isInPath){
+            return false;
+        }
+
+        Piece[][] grid = chessBoard.getGrid();
+
+        grid[getY()][getX()] = null;
+
+        grid[y][x] = null;
+
         setX(x);
         setY(y);
+
+        grid[getY()][getX()] = this;
+
+        chessBoard.calculate();
+        chessBoard.removeSelected();
+
+        return true;
     }
 
     public void recalculate(){
-        paths= new int[0][];
-
-        //TODO calculation authorize negative and number past 8
+        List<int[]> list = new ArrayList<>();
 
         for (int[] ints : calculatePaths()) {
             int x = ints[0];
             int y = ints[1];
 
-            if(x >=8 || x<0){
-
+            if(
+                    (x <8 && x>=0)&&
+                    (y <8 && y>=0)
+            ){
+                list.add(new int[]{x,y});
             }
         }
-        preys = calculatePreys();
+
+        paths= new int[list.size()][];
+
+        for (int i = 0; i < list.size(); i++) {
+            paths[i] = list.get(i);
+        }
+
+        preys = new ArrayList<>();
+
+        for (Piece piece : calculatePreys()) {
+            if(piece ==null)
+                continue;
+
+            preys.add(piece);
+        }
     }
 
     @Override

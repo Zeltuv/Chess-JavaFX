@@ -7,8 +7,8 @@ public enum Team {
         if (this!=ON_TOP){
             return a-i;
         }
-        return i+i;
+        return a+i;
     }
 
-    public static Team ON_TOP = BLACK;
+    public static final Team ON_TOP = BLACK;
 }
