@@ -3,6 +3,7 @@ package tr.zeltuv.chessjavafx.chess;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import tr.zeltuv.chessjavafx.Game;
+import tr.zeltuv.chessjavafx.chess.piece.Horse;
 import tr.zeltuv.chessjavafx.chess.piece.Pawn;
 import tr.zeltuv.chessjavafx.chess.team.Team;
 import tr.zeltuv.chessjavafx.node.GameNode;
@@ -24,6 +25,7 @@ public class ChessBoard implements GameNode {
 
     public static Map<Character, Class<? extends Piece>> PIECES_CHAR = new HashMap<>() {{
         put('p', Pawn.class);
+        put('h', Horse.class);
     }};
 
     private Team playingTeam = Team.WHITE;
@@ -201,10 +203,10 @@ public class ChessBoard implements GameNode {
     }
 
     public Piece lookupForPiece(int x, int y) {
-        if(x <0 || x>8)
+        if(x <0 || x>=8)
             return null;
 
-        if(y <0 || y>8)
+        if(y <0 || y>=8)
             return null;
 
         return grid[y][x];

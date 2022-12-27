@@ -6,6 +6,8 @@ import tr.zeltuv.chessjavafx.chess.team.Team;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Pawn extends Piece {
     private static final char ID = 'p';
@@ -22,30 +24,25 @@ public class Pawn extends Piece {
     public List<Piece> calculatePreys() {
         List<Piece> preys = new ArrayList<>();
 
-        int x1 =
-        int[] secondCoordinate = new int[]{
+        Piece first = getChessBoard().lookupForPiece(getX()+1,getTeam().adjustDirection(getY(),1));
+        Piece second = getChessBoard().lookupForPiece(getX()-1,getTeam().adjustDirection(getY(),1));
 
-        };
+        preys.add(first);
+        preys.add(second);
 
-      /*  if (firstPlay) {
-            int y2 = getTeam().adjustDirection(getY(), 2);
+        return preys.stream().filter(Objects::nonNull)
+                .filter(piece -> piece.getTeam()!=this.getTeam()).collect(Collectors.toList());
+    }
 
-            if(y2 <0){
-                Piece piece = getChessBoard().lookupForPiece(getX(), y2);
-                if(piece!= null && piece.getTeam() != getTeam())
-                    preys.add(piece);
-            }
+    @Override
+    public boolean move(int x, int y) {
+        boolean b = super.move(x, y);
+
+        if(b){
+            firstPlay = false;
         }
 
-        int y1 = getTeam().adjustDirection(getY(), 1);
-
-        if(y1 <0){
-            Piece piece = getChessBoard().lookupForPiece(getX(), y1);
-            if(piece!= null && piece.getTeam() != getTeam())
-                preys.add(piece);
-        }
-*/
-        return preys;
+        return b;
     }
 
     @Override
@@ -53,11 +50,25 @@ public class Pawn extends Piece {
         int y = getTeam().adjustDirection(getY(), 1);
         int y2 = getTeam().adjustDirection(getY() , 2);
 
-        if (firstPlay)
+        Piece potential1 = getChessBoard().lookupForPiece(getX(),y);
+        Piece potential2 = getChessBoard().lookupForPiece(getX(),y2);
+
+        if(potential1 != null){
+            return new int[][]{};
+        }
+
+        if (firstPlay) {
+            if(potential2 != null){
+                return new int[][]{
+                        {getX(),y}
+                };
+            }
+
             return new int[][]{
                     {getX(), y},
-                    {getX(),y2}
+                    {getX(), y2}
             };
+        }
 
         return new int[][]{
                 {getX(),y}

@@ -10,6 +10,7 @@ import tr.zeltuv.chessjavafx.node.GameNode;
 import java.util.ArrayList;
 import java.util.List;
 
+import static tr.zeltuv.chessjavafx.chess.ChessBoard.ATTACK_TILE;
 import static tr.zeltuv.chessjavafx.chess.ChessBoard.BLUE_SELECTED_TILE;
 
 public abstract class Piece implements GameNode {
@@ -28,7 +29,7 @@ public abstract class Piece implements GameNode {
 
     private List<Piece> preys = new ArrayList<>();
 
-    public Piece(ChessBoard chessBoard, char id, int x, int y, String blackImage,String whiteImage, Team team) {
+    public Piece(ChessBoard chessBoard, char id, int x, int y, String blackImage, String whiteImage, Team team) {
         this.chessBoard = chessBoard;
         this.id = id;
         this.x = x;
@@ -82,7 +83,7 @@ public abstract class Piece implements GameNode {
         return preys;
     }
 
-    public int[][] getPathToRender(){
+    public int[][] getPathToRender() {
         List<int[]> pathList = new ArrayList<>();
 
         for (int i = 0; i < getPaths().length; i++) {
@@ -92,15 +93,15 @@ public abstract class Piece implements GameNode {
             boolean hasPrey = false;
 
             for (Piece prey : getPreys()) {
-                if(
+                if (
                         (prey.getX() == x)
-                        &&(prey.getY() == y)
+                                && (prey.getY() == y)
                 )
                     hasPrey = true;
             }
 
-            if(!hasPrey) {
-                pathList.add(new int[]{x,y});
+            if (!hasPrey) {
+                pathList.add(new int[]{x, y});
             }
 
         }
@@ -120,39 +121,51 @@ public abstract class Piece implements GameNode {
 
     public boolean move(int x, int y) {
         boolean isInPath = false;
-        boolean isPray = false;
+        Piece prey = null;
 
         for (int[] path : getPaths()) {
             int xPath = path[0];
             int yPath = path[1];
 
-            if((x == xPath)&&(y == yPath)){
+            if ((x == xPath) && (y == yPath)) {
                 isInPath = true;
-                for (Piece prey : getPreys()) {
-                    if(
-                            (prey.getX() == x)&&
-                            (prey.getY() == y)
-                    ){
-                        isPray = true;
-                    }
-                }
+                break;
             }
         }
 
-        if(!isInPath){
+        for (Piece preys : getPreys()) {
+            if (
+                    (preys.getX() == x) &&
+                            (preys.getY() == y)
+            ) {
+                prey = preys;
+            }
+        }
+
+        if (!isInPath && prey == null) {
             return false;
         }
 
         Piece[][] grid = chessBoard.getGrid();
 
-        grid[getY()][getX()] = null;
+        grid[this.y][this.x] = null;
 
-        grid[y][x] = null;
+        if (prey != null) {
+            int preyX = prey.getX();
+            int preyY = prey.getY();
 
-        setX(x);
-        setY(y);
+            setX(preyX);
+            setY(preyY);
 
-        grid[getY()][getX()] = this;
+            grid[preyY][preyX] = this;
+        } else {
+            setX(x);
+            setY(y);
+
+
+            grid[y][x] = this;
+        }
+
 
         chessBoard.calculate();
         chessBoard.removeSelected();
@@ -160,22 +173,23 @@ public abstract class Piece implements GameNode {
         return true;
     }
 
-    public void recalculate(){
+    public void recalculate() {
         List<int[]> list = new ArrayList<>();
 
         for (int[] ints : calculatePaths()) {
             int x = ints[0];
             int y = ints[1];
 
-            if(
-                    (x <8 && x>=0)&&
-                    (y <8 && y>=0)
-            ){
-                list.add(new int[]{x,y});
+            if (
+                    (x < 8 && x >= 0) &&
+                            (y < 8 && y >= 0)
+            ) {
+                if (getChessBoard().lookupForPiece(x, y) == null)
+                    list.add(new int[]{x, y});
             }
         }
 
-        paths= new int[list.size()][];
+        paths = new int[list.size()][];
 
         for (int i = 0; i < list.size(); i++) {
             paths[i] = list.get(i);
@@ -184,7 +198,7 @@ public abstract class Piece implements GameNode {
         preys = new ArrayList<>();
 
         for (Piece piece : calculatePreys()) {
-            if(piece ==null)
+            if (piece == null)
                 continue;
 
             preys.add(piece);
@@ -197,29 +211,41 @@ public abstract class Piece implements GameNode {
 
     @Override
     public void render(GraphicsContext context) {
-        if(team == Team.WHITE) {
+        if (team == Team.WHITE) {
             context.drawImage(whiteImage, x * WIDTH, y * HEIGHT, WIDTH, HEIGHT);
-        }else{
+        } else {
             context.drawImage(blackImage, x * WIDTH, y * HEIGHT, WIDTH, HEIGHT);
         }
 
-        if (chessBoard.getSelected() == this)
+        if (chessBoard.getSelected() == this) {
             drawSelectedHighlight(context);
+            drawPreyHighlight(context);
+        }
     }
 
-    public void drawSelectedHighlight(GraphicsContext context){
-        drawHighlight(context,BLUE_SELECTED_TILE,getX(),getY());
+    public void drawSelectedHighlight(GraphicsContext context) {
+        drawHighlight(context, BLUE_SELECTED_TILE, getX(), getY());
 
         for (int[] direction : getPaths()) {
             int x = direction[0];
             int y = direction[1];
 
-            drawHighlight(context,BLUE_SELECTED_TILE,x,y);
+            drawHighlight(context, BLUE_SELECTED_TILE, x, y);
 
         }
     }
 
-    private void drawHighlight(GraphicsContext context,Color color,int x,int y){
+    public void drawPreyHighlight(GraphicsContext context) {
+        for (Piece piece : getPreys()) {
+            int x = piece.x;
+            int y = piece.y;
+
+            drawHighlight(context, ATTACK_TILE, x, y);
+
+        }
+    }
+
+    private void drawHighlight(GraphicsContext context, Color color, int x, int y) {
         context.setFill(color);
         context.fillRect(x * WIDTH
                 , y * HEIGHT,
